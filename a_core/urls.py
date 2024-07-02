@@ -30,7 +30,11 @@ urlpatterns = [
     path('@<username>/', profile_view, name="profile"),
 ]
 
-
+if DEBUG:
+    urlpatterns += [
+        path("__debug__/", include("debug_toolbar.urls"))
+    ]
+    
 # Only used when DEBUG=True, whitenoise can serve files when DEBUG=False
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

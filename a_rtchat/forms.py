@@ -17,4 +17,3 @@ class ChatMessageCreateForm(ModelForm):
                 }
             ),
         }
-        # body = forms.TextInput

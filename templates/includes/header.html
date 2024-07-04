@@ -8,7 +8,29 @@
     <nav class="block relative">
         <ul class="navitems flex items-center justify-center h-full">
             {% if request.user.is_authenticated %}
-            <li><a href="/">Home</a></li>
+            <li x-data="{ dropdownChatOpen: false }" class="relative">
+                <a href="javascript:void(0);" @click="dropdownChatOpen = !dropdownChatOpen" class="flex items-center">
+                    Chat
+                    <img x-bind:class="dropdownChatOpen ? 'rotate-180 duration-300' : 'rotate-0 duration-300'" src="https://img.icons8.com/small/32/ffffff/expand-arrow.png" class="ml-2 transition-transform w-6 h-6">
+                </a>
+                <div x-show="dropdownChatOpen" x-cloak @click.away="dropdownChatOpen = false" class="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-200 rounded-md shadow-lg"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform -translate-y-5 scale-90"
+                     x-transition:enter-end="opacity-100 transform translate-y-0 scale-100">
+                     <ul class="hoverlist [&>li>a]:justify-end py-1">
+                        <li class="text-gray-500 px-4 py-2 hover:bg-gray-100"><a href="{% url 'home' %}">Public Chat</a></li>
+                        {% for chatroom in user.chat_group.all %}
+                            {% if chatroom.is_private %}
+                                {% for member in chatroom.members.all %}
+                                    {% if member != user %}
+                                        <li class="px-4 py-2 hover:bg-gray-100" ><a href="{% url 'chatroom' chatroom.group_name %}">{{ member.profile.name }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </li>
             <li x-data="{ dropdownOpen: false }" class="relative">
                 <a @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" class="cursor-pointer select-none">
                     <img class="h-8 w-8 rounded-full object-cover" src="{{ user.profile.avatar }}"/>

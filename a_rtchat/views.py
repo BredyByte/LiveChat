@@ -1,4 +1,5 @@
 from hmac import new
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
@@ -6,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.urls import reverse
 from a_rtchat.models import ChatGroup
-from a_rtchat.forms import ChatMessageCreateForm, NewGroupForm
+from a_rtchat.forms import ChatMessageCreateForm, NewGroupForm, ChatRoomEditForm
 
 
 @login_required
@@ -99,3 +100,60 @@ def create_groupchat(request):
     }
 
     return render(request, "a_rtchat/create_groupchat.html", context)
+
+
+@login_required
+def chatroom_edit_view(request, chatroom_name):
+    chat_group = get_object_or_404(ChatGroup, group_name=chatroom_name)
+    if request.user != chat_group.admin:
+        raise Http404()
+
+    form = ChatRoomEditForm(instance=chat_group)
+
+    if request.method == "POST":
+        form = ChatRoomEditForm(request.POST, instance=chat_group)
+        if form.is_valid():
+            form.save()
+
+            remove_members = request.POST.getlist("remove_members")
+            for member_id in remove_members:
+                member = User.objects.get(id=member_id)
+                chat_group.members.remove(member)
+
+            return redirect("chatroom", chatroom_name)
+
+    context = {
+        "form": form,
+        "chat_group": chat_group,
+    }
+
+    return render(request, "a_rtchat/chatroom_edit.html", context)
+
+
+@login_required
+def chatroom_delete_view(request, chatroom_name):
+    chat_group = get_object_or_404(ChatGroup, group_name=chatroom_name)
+    if request.user != chat_group.admin:
+        raise Http404()
+
+    if request.method == "POST":
+        chat_group.delete()
+        messages.success(request, f'Chatroom "{chat_group.groupchat_name}" deleted')
+        return redirect("home")
+
+    context = {
+        "chat_group": chat_group,
+    }
+
+    return render(request, "a_rtchat/chatroom_delete.html", context)
+
+
+@login_required
+def chatroom_leave_view(request, chatroom_name):
+    chat_group = get_object_or_404(ChatGroup, group_name=chatroom_name)
+    if request.user not in chat_group.members.all():
+        raise Http404()
+
+    chat_group.members.remove(request.user)
+    messages.success(request, f'You left "{chat_group.groupchat_name}" Chat')
+    return redirect("home")

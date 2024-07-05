@@ -69,7 +69,7 @@
             </div>
         </div>
     </div>
-    {% if chat_group.members.exists %}
+    {% if chat_group.members.exists and chat_group.groupchat_name %}
     <div class="flex justify-end pt-2">
         <a href="{% url "chatroom-leave" chat_group.group_name %}" class="bg-red-500 hover:bg-red-200 text-white font-bold py-2 px-4 rounded-lg">Leave Chat</a>
     </div>

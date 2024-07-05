@@ -21,7 +21,7 @@ class ChatGroup(models.Model):
     is_private = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.group_name
+        return self.groupchat_name if self.groupchat_name else self.group_name
 
 
 class GroupMessage(models.Model):

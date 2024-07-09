@@ -19,28 +19,8 @@
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0 transform -translate-y-5 scale-90"
                      x-transition:enter-end="opacity-100 transform translate-y-0 scale-100">
-                     <ul class="hoverlist [&>li>a]:justify-end py-1">
-                        <li class="text-gray-500 px-4 py-2 hover:bg-gray-100"><a href="{% url 'home' %}">Public Chat</a></li>
-                        {% for chatroom in user.chat_group.all %}
-                            {% if chatroom.groupchat_name %}
-                                <li>
-                                    <a class="leading-5 text-right" href="{% url "chatroom" chatroom.group_name %}">
-                                        {{ chatroom.groupchat_name|slice:":30" }}
-                                    </a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                        {% for chatroom in user.chat_group.all %}
-                            {% if chatroom.is_private %}
-                                {% for member in chatroom.members.all %}
-                                    {% if member != user %}
-                                        <li class="px-4 py-2 hover:bg-gray-100" ><a href="{% url 'chatroom' chatroom.group_name %}">{{ member.profile.name }}</a></li>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </div>
+                    <ul id="chats-list"></ul>
+                    </div>
             </li>
             <li x-data="{ dropdownOpen: false }" class="relative">
                 <a @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" class="cursor-pointer select-none">

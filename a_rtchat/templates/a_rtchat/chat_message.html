@@ -1,13 +1,21 @@
 {% if message.author == user %}
-<li class="flex justify-end mb-4">
-	<div class="bg-green-200 rounded-l-lg rounded-tr-lg p-4 max-w-[75%]">
-		{% include "a_rtchat/partials/message_content.html" %}
-	</div>
-	<div class="flex items-end">
-		<svg height="13" width="8" >
-			<path fill="#bbf7d0" d="M6.3,10.4C1.5,8.7,0.9,5.5,0,0.2L0,13l5.2,0C7,13,9.6,11.5,6.3,10.4z"/>
-		</svg>
-	</div>
+<li class="relative flex justify-end mb-4" id="message-{{ message.id }}">
+    <div class="bg-green-200 rounded-l-lg rounded-tr-lg p-4 max-w-[75%]">
+        {% include "a_rtchat/partials/message_content.html" %}
+    </div>
+    <div class="flex items-end">
+        <svg height="13" width="8">
+            <path fill="#bbf7d0" d="M6.3,10.4C1.5,8.7,0.9,5.5,0,0.2L0,13l5.2,0C7,13,9.6,11.5,6.3,10.4z"/>
+        </svg>
+    </div>
+    <a class="cursor-pointer absolute -right-2 -top-2.5 group-hover:block"
+        hx-get="{% url 'chat-message-delete' message.id %}"
+        hx-target="#message-{{ message.id }}"
+        hx-swap="delete outerHTML">
+        <svg stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" class="w-6 h-6 -ml-8">
+            <path class="stroke-gray-500" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </a>
 </li>
 {% else %}
 <li>

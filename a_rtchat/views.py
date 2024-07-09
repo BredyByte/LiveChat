@@ -12,7 +12,6 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 
-
 @login_required
 def chat_view(request, chatroom_name="public-chat"):
     chat_group = get_object_or_404(ChatGroup, group_name=chatroom_name)
@@ -180,3 +179,14 @@ def chat_file_upload(request, chatroom_name):
         }
         async_to_sync(channel_layer.group_send)(chatroom_name, event)
     return HttpResponse()
+
+
+@login_required
+def chat_message_delete(request, message_id):
+    message = get_object_or_404(GroupMessage, id=message_id)
+
+    if request.user == message.author:
+        if request.htmx:
+            message.delete()
+        return HttpResponse()
+    raise Http404()

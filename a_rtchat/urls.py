@@ -7,6 +7,7 @@ from a_rtchat.views import (
     chatroom_delete_view,
     chatroom_leave_view,
     chat_file_upload,
+    chat_message_delete,
 )
 
 urlpatterns = [
@@ -18,4 +19,9 @@ urlpatterns = [
     path("chat/delete/<chatroom_name>", chatroom_delete_view, name="chatroom-delete"),
     path("chat/leave/<chatroom_name>", chatroom_leave_view, name="chatroom-leave"),
     path("chat/fileupload/<chatroom_name>", chat_file_upload, name="chat-file-upload"),
+    path(
+        "chat/deletemessage/<int:message_id>",
+        chat_message_delete,
+        name="chat-message-delete",
+    ),
 ]

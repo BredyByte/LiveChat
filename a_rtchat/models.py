@@ -1,3 +1,4 @@
+import os
 from tkinter import CASCADE
 from django.db import models
 from django.contrib.auth.models import User
@@ -29,11 +30,37 @@ class GroupMessage(models.Model):
         ChatGroup, related_name="chat_messages", on_delete=models.CASCADE
     )
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    body = models.CharField(max_length=300)
+    body = models.CharField(max_length=300, blank=True, null=True)
+    file = models.FileField(upload_to="files/", blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def filename(self):
+        if self.file:
+            return os.path.basename(self.file.name)
+        else:
+            return None
+
     def __str__(self):
-        return f"{self.author.username} : {self.body}"
+        return (
+            f"{self.author.username} : {self.filename if self.filename else self.body}"
+        )
 
     class Meta:
         ordering = ["-created"]
+
+    @property
+    def is_image(self):
+        if self.filename.lower().endswith(
+            (
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".gif",
+                ".svg",
+                ".webp",
+            )
+        ):
+            return True
+        else:
+            return False

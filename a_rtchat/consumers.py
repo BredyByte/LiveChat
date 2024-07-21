@@ -48,11 +48,7 @@ class ChatroomConsumer(WebsocketConsumer):
     def message_handler(self, event):
         message_id = event["message_id"]
         message = GroupMessage.objects.get(id=message_id)
-        context = {
-            "message": message,
-            "user": self.user,
-            "chat_group": self.chatroom
-        }
+        context = {"message": message, "user": self.user, "chat_group": self.chatroom}
         html = render_to_string(
             "a_rtchat/partials/chat_message_p.html", context=context
         )
@@ -92,6 +88,8 @@ class OnlineStatusConsumer(WebsocketConsumer):
         self.user = self.scope["user"]
         self.group_name = "online-status"
         self.group = get_object_or_404(ChatGroup, group_name=self.group_name)
+
+        print(self.user)    
 
         if self.user not in self.group.users_online.all():
             self.group.users_online.add(self.user)
